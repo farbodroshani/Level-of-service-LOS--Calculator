@@ -2,6 +2,8 @@
 
 A desktop application for calculating Level of Service (LOS) for highway facilities based on the **Highway Capacity Manual, 7th Edition (HCM 7)**. This tool provides detailed step-by-step calculations for basic freeway segments, multilane highway segments, and two-lane highway segments.
 
+![Basic freeway segment analysis](docs/screenshots/freeway.png)
+
 ## Features
 
 - **Three Facility Types Supported:**
@@ -21,11 +23,16 @@ A desktop application for calculating Level of Service (LOS) for highway facilit
   - Two-lane average speed, percent followers, and follower density, including horizontal curves, passing lane midpoint performance, and downstream passing lane effects
   - Detailed step-by-step solution breakdowns with equation and exhibit references
 
-- **User-Friendly Interface:**
-  - Clean GUI built with Tkinter
-  - Scrollable input forms
-  - Detailed results display
-  - Step-by-step calculation viewer
+- **Professional Interface:**
+  - Modern Tkinter GUI with one-click switching between facility types and analysis modes
+  - Color-coded LOS badge with a plain-language description of operating conditions
+  - Inputs that appear only when relevant (e.g., grade data for specific grades, opposing volume for passing zones)
+  - Units and help tooltips on every input, with validation that highlights invalid entries
+  - Results table and an in-app step-by-step tab citing HCM equations and exhibits
+  - Copy or save a complete calculation report (inputs, results and steps) as a text file
+  - Keyboard shortcuts: Enter to calculate, Ctrl+S to save the report
+
+- **Verified:** an automated test suite reproduces the HCM 7 Chapter 26 example problems
 
 ## Requirements
 
@@ -46,6 +53,11 @@ A desktop application for calculating Level of Service (LOS) for highway facilit
 ```bash
 python los_app.py
 ```
+
+1. Select the facility type (Freeway, Multilane, Two-Lane) and the analysis mode (Analyze LOS or Design lanes)
+2. Enter the inputs - hover over ⓘ for guidance
+3. Press **Calculate** (or Enter) to see the LOS, the performance measures and the step-by-step solution
+4. Use **Copy report** or **Save report...** to document the analysis
 
 ### Input Requirements
 
@@ -93,6 +105,12 @@ python los_app.py
 
 **Outputs:** vertical class, demand flow rate, capacity, d/c, FFS, average speed, percent followers, follower density, LOS (for passing lanes, the midpoint follower density and the follower density at the end of the lane)
 
+## Screenshots
+
+| Two-lane highway passing lane | Step-by-step calculations |
+|---|---|
+| ![Two-lane highway analysis](docs/screenshots/two_lane.png) | ![Step-by-step calculations](docs/screenshots/step_by_step.png) |
+
 ## Level of Service Definitions
 
 ### Basic Freeway and Multilane Highway Segments (Exhibit 12-15)
@@ -117,7 +135,7 @@ python los_app.py
 
 ## Step-by-Step Calculations
 
-Click the "View Step-by-Step Calculations" button in the results panel to see:
+Open the "Step-by-step" tab in the results panel to see:
 - All intermediate values
 - Equations and exhibits used (numbered as in HCM 7)
 - Table lookups and interpolations
@@ -125,7 +143,7 @@ Click the "View Step-by-Step Calculations" button in the results panel to see:
 
 ## Design Mode
 
-For Freeway and Multilane facilities, you can use the "Design for Target LOS" mode to:
+For Freeway and Multilane facilities, you can use the "Design lanes" mode to:
 1. Enter your traffic and geometric conditions
 2. Select a target LOS (A through E)
 3. The application will determine the minimum number of lanes (2 to 8 per direction) required
@@ -166,6 +184,36 @@ This application is based on the **Highway Capacity Manual, 7th Edition: A Guide
 - Heavy vehicles use a single PCE (ET = 2.0 level, 3.0 rolling); RVs are no longer a separate class. Mountainous terrain is replaced by specific-grade PCEs
 - Right-side clearance is interpolated, and the multilane lateral clearance table depends on the number of lanes
 - The two-lane highway method (ATS/PTSF with Class I/II/III) is replaced by the HCM 7 follower-density method
+
+## Project Structure
+
+```
+los_app.py                    # Entry point - launches the application
+los_calculator/
+    common.py                 # Shared interpolation helpers
+    uninterrupted.py          # HCM 7 Chapter 12: freeway and multilane highway segments
+    two_lane.py               # HCM 7 Chapter 15: two-lane highways
+    gui.py                    # Tkinter user interface
+tests/
+    test_hcm7_examples.py     # Checks against the HCM 7 Chapter 26 example problems
+docs/screenshots/             # Images used in this README
+```
+
+The calculation modules have no GUI dependency and can be used from other Python code:
+
+```python
+from los_calculator import calculate_freeway
+
+result = calculate_freeway(dict(volume=2000, phf=0.92, lanes=2, trucks=5, terrain="Level",
+                                lane_width=11, lateral_clearance=2, ramp_density=4))
+print(result["LOS"], result["Density (pc/mi/ln)"])   # C 18.78
+```
+
+## Running the Tests
+
+```bash
+python -m unittest discover tests
+```
 
 ## Limitations
 
@@ -210,6 +258,12 @@ This application is based on the **Highway Capacity Manual, 7th Edition: A Guide
 For questions or issues, please refer to the HCM 7th Edition (Chapters 12, 15 and the example problems in Chapter 26) for detailed methodology explanations.
 
 ## Version History
+
+- **v2.1** - Professional interface and project structure
+  - Redesigned GUI: segmented facility/mode selectors, LOS badge, results table, step-by-step tab
+  - Context-aware inputs with units, tooltips and validation
+  - Copy and save calculation reports
+  - Code organized into the `los_calculator` package with an automated HCM 7 test suite
 
 - **v2.0** - Updated to the Highway Capacity Manual, 7th Edition
   - Continuous speed–flow model with capacity, v/c, SAF and CAF
