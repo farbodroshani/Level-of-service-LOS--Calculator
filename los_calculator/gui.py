@@ -309,7 +309,7 @@ class FacilityForm:
         else:
             control = ttk.Entry(self.frame, textvariable=var, width=22)
         control.grid(row=row, column=1, sticky="ew", pady=4)
-        unit = ttk.Label(self.frame, text=field.unit, style="Unit.TLabel", width=7)
+        unit = ttk.Label(self.frame, text=field.unit, style="Unit.TLabel", width=9)
         unit.grid(row=row, column=2, sticky="w", padx=(8, 0))
         info = ttk.Label(self.frame, text="ⓘ" if field.help else "", style="Info.TLabel", cursor="question_arrow")
         info.grid(row=row, column=3, sticky="w", padx=(2, 0))
