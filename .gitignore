@@ -1,0 +1,5 @@
+# Reference manuals are not distributed with this repository
+*.pdf
+
+__pycache__/
+*.pyc
